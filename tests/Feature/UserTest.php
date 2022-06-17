@@ -15,13 +15,30 @@ class UserTest extends TestCase
      *
      * @return void
      */
-    public function test_user_can_be_created()
+    public function test_user_can_be_a_candidate()
     {
         $response = $this->post($this->registerUrl(), $this->data());
         $this->assertCount(1, User::all());
         $response->assertStatus(201);
     }
 
+    public function test_user_can_be_a_company()
+    {
+        $response = $this->post($this->registerUrl(), array_merge($this->data(), ['type' => 2]));
+        $this->assertCount(1, User::all());
+        $response->assertStatus(201);
+    }
+
+    public function test_user_email_has_already_been_taken()
+    {
+        $this->post($this->registerUrl(), $this->data());
+        $response = $this->post($this->registerUrl(), $this->data());
+        $this->assertCount(1, User::all());
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('email');
+    }
+
+    //TODO Make the login knows if it's a candidate or a company
     public function test_a_user_can_login()
     {
         $this->withExceptionHandling();
@@ -46,11 +63,25 @@ class UserTest extends TestCase
         $response->assertJsonValidationErrors('password');
     }
 
+    public function test_a_user_id_is_required() {
+        $this->withExceptionHandling();
+        $response = $this->post($this->registerUrl(), array_merge($this->data(), ['user_id' => '']));
+        $response->assertJsonValidationErrors('user_id');
+    }
+
+    public function test_a_user_type_is_required() {
+        $this->withExceptionHandling();
+        $response = $this->post($this->registerUrl(), array_merge($this->data(), ['type' => '']));
+        $response->assertJsonValidationErrors('type');
+    }
+
     protected function data() {
         return [
             'name' => 'Antonio',
             'email' => 'antonio@tecempregos.com.br',
-            'password' => '10203040'
+            'password' => '10203040',
+            'type' => 1,
+            'user_id' => 1
         ];
     }
 
