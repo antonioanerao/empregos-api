@@ -38,12 +38,10 @@ class UserTest extends TestCase
         $response->assertJsonValidationErrors('email');
     }
 
-    //TODO Make the login knows if it's a candidate or a company
     public function test_a_user_can_login()
     {
-        $this->withExceptionHandling();
         $this->post($this->registerUrl(), array_merge($this->data()));
-        $response = $this->post('/api/auth/login', array_merge($this->data(), ['name' => '']));
+        $response = $this->post($this->loginUrl(), array_merge($this->data(), ['name' => '']));
         $this->assertCount(1, User::all());
         $response->assertStatus(200);
     }

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserInformationRequest;
+use App\Http\Requests\UserCandidateRequest;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRequest;
-use App\Models\UserInformation;
+use App\Models\UserCandidate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -25,7 +25,7 @@ class AuthController extends Controller
         if(!$token) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthorized',
+                'message' => 'Unauthorized login attempt',
             ], 401);
         }
 
@@ -34,11 +34,14 @@ class AuthController extends Controller
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
+            ],
+            'user' => [
+                'type' => auth()->user()->userType()->type
             ]
         ]);
     }
 
-    public function register(UserRequest $userRequest, UserInformationRequest $userInformationRequest){
+    public function register(UserRequest $userRequest, UserCandidateRequest $userInformationRequest){
         DB::beginTransaction();
         try{
             $user = User::create([
@@ -47,7 +50,7 @@ class AuthController extends Controller
                 'password' => bcrypt($userRequest->password),
             ]);
 
-            UserInformation::create([
+            UserCandidate::create([
                 'user_id' => $user->id,
                 'type' => $userInformationRequest->type
             ]);
