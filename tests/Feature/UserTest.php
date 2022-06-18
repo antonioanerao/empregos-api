@@ -15,14 +15,14 @@ class UserTest extends TestCase
      *
      * @return void
      */
-    public function test_user_can_be_a_candidate()
+    public function test_user_can_register_as_candidate()
     {
         $response = $this->post($this->registerUrl(), $this->data());
         $this->assertCount(1, User::all());
         $response->assertStatus(201);
     }
 
-    public function test_user_can_be_a_company()
+    public function test_user_can_register_as_company()
     {
         $response = $this->post($this->registerUrl(), array_merge($this->data(), ['type' => 2]));
         $this->assertCount(1, User::all());
@@ -59,12 +59,6 @@ class UserTest extends TestCase
     public function test_a_user_password_is_required() {
         $response = $this->post($this->registerUrl(), array_merge($this->data(), ['password' => '']));
         $response->assertJsonValidationErrors('password');
-    }
-
-    public function test_a_user_id_is_required() {
-        $this->withExceptionHandling();
-        $response = $this->post($this->registerUrl(), array_merge($this->data(), ['user_id' => '']));
-        $response->assertJsonValidationErrors('user_id');
     }
 
     public function test_a_user_type_is_required() {
