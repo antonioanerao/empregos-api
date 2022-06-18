@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('user_candidates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->integer('type')->default(1);
+            $table->integer('type');
             $table->timestamps();
         });
     }

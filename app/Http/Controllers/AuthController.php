@@ -20,13 +20,10 @@ class AuthController extends Controller
 
     public function login(UserLoginRequest $request)
     {
-        $token = auth('api')->attempt($request->only('email', 'password'));
-
-        if(!$token) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Unauthorized login attempt',
-            ], 401);
+        try {
+            $token = auth('api')->attempt($request->only('email', 'password'));
+        }catch(\Exception $exception) {
+            return $exception->getMessage();
         }
 
         return response()->json([
@@ -41,7 +38,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function register(UserRequest $userRequest, UserCandidateRequest $userInformationRequest){
+    public function register(UserRequest $userRequest, UserCandidateRequest $userCandidateRequest){
         DB::beginTransaction();
         try{
             $user = User::create([
@@ -52,7 +49,7 @@ class AuthController extends Controller
 
             UserCandidate::create([
                 'user_id' => $user->id,
-                'type' => $userInformationRequest->type
+                'type' => $userCandidateRequest->type
             ]);
             DB::commit();
         }catch(\Exception $exception) {
