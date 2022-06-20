@@ -37,6 +37,10 @@ class UserData
         return "/api/jobs/" . $id;
     }
 
+    public static function postJob() {
+        return "/api/jobs";
+    }
+
     public static function newJobData($user) {
         return [
             'user_id' => $user,

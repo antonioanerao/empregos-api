@@ -24,7 +24,7 @@ class UserTest extends TestCase
         $this->assertCount(1, User::all());
         $user = User::first();
 
-        $response = $this->withHeaders(UserData::headers($user))->post('api/jobs', UserData::newJobData($user->id));
+        $response = $this->withHeaders(UserData::headers($user))->post(UserData::postJob(), UserData::newJobData($user->id));
 
         $this->assertCount(1, Job::all());
         $response->assertStatus(201);
@@ -36,7 +36,7 @@ class UserTest extends TestCase
         $user = User::first();
 
         $response = $this->withHeaders(UserData::headers($user))
-            ->post('api/jobs', UserData::newJobData($user->id));
+            ->post(UserData::postJob(), UserData::newJobData($user->id));
 
         $job = Job::first();
 
@@ -52,7 +52,29 @@ class UserTest extends TestCase
         $response->assertStatus(200);
     }
 
-//    public function test_a_company_cant_edit_a_job_from_another_company() {
-//
-//    }
+    public function test_a_company_cant_edit_a_job_from_another_company() {
+        $this->post(UserData::registerUrl(), array_merge(UserData::newUserData(), ['type' => 2]));
+        $this->post(UserData::registerUrl(), array_merge(UserData::newUserData(),
+            ['email' => 'mail@domain.com', 'type' => 2]));
+        $this->assertCount(2, User::all());
+
+        $user = User::first();
+        $user2 = User::orderBy('id', 'desc')->first();
+
+        $response = $this->withHeaders(UserData::headers($user))
+            ->post(UserData::postJob(), UserData::newJobData($user->id));
+
+        $job = Job::first();
+
+        $this->assertCount(1, Job::all());
+        $response->assertStatus(201);
+
+        $response = $this->withHeaders(UserData::headers($user))
+            ->patch(UserData::patch($job->id),
+                array_merge(UserData::newJobData($user2->id), ['title' => 'my new title']));
+
+        $response->assertStatus(401);
+
+        print_r($user2);
+    }
 }
