@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\JobController;
+use App\Models\Job;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +24,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['prefix'=>'auth'], function() {
     Route::post('login', [AuthController::class, 'login'])->name('auth.login');
     Route::post('register', [AuthController::class, 'register'])->name('auth.register');
+});
+
+Route::group(['prefix' => 'jobs'], function() {
+   Route::resource('/',JobController::class);
 });
