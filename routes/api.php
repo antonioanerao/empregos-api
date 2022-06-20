@@ -26,6 +26,9 @@ Route::group(['prefix'=>'auth'], function() {
     Route::post('register', [AuthController::class, 'register'])->name('auth.register');
 });
 
-Route::group(['prefix' => 'jobs'], function() {
-   Route::resource('/',JobController::class);
+Route::resource('jobs',JobController::class);
+
+
+Route::get('/test', function () {
+    return "test";
 });

@@ -13,32 +13,17 @@ class JobController extends Controller
         $this->middleware('auth:api', ['except' => []]);
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(JobRequest $request)
     {
         $data = $request->all();
@@ -64,46 +49,38 @@ class JobController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Job  $job
-     * @return \Illuminate\Http\Response
-     */
+
     public function show(Job $job)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Job  $job
-     * @return \Illuminate\Http\Response
-     */
+
     public function edit(Job $job)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Job  $job
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Job $job)
+
+    public function update(JobRequest $request, Job $job)
     {
-        //
+        if(($job->user_id != auth()->user()->id) or ($request->user_id != auth()->user()->id) ) {
+            return response()->json(['error' => 'Operation unauthorized'], 401);
+        }
+
+        try{
+            $job->update($request->all());
+        }catch(\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Your job was successfully created',
+            'job-details' => $job
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Job  $job
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Job $job)
     {
         //

@@ -4,10 +4,12 @@ namespace Tests\Feature\User;
 
 use Carbon\Carbon;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
 
 class UserData
 {
-    public static function data() {
+    public static function newUserData() {
         return [
             'name' => 'Antonio',
             'email' => 'antonio@empregos.com.br',
@@ -31,10 +33,14 @@ class UserData
         ];
     }
 
+    public static function patch($id) {
+        return "/api/jobs/" . $id;
+    }
+
     public static function newJobData($user) {
         return [
             'user_id' => $user,
-            'title' => 'my new job',
+            'title' => 'new job post',
             'companyName' => 'Company',
             'description' => nl2br('My job description'),
             'email' => 'mail@domain.com',

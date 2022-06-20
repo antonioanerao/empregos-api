@@ -14,13 +14,13 @@ class UserTest extends TestCase
 
     public function test_user_can_register_as_company()
     {
-        $response = $this->post(UserData::registerUrl(), array_merge(UserData::data(), ['type' => 2]));
+        $response = $this->post(UserData::registerUrl(), array_merge(UserData::newUserData(), ['type' => 2]));
         $this->assertCount(1, User::all());
         $response->assertStatus(201);
     }
 
     public function test_a_company_can_post_a_job() {
-        $this->post(UserData::registerUrl(), array_merge(UserData::data(), ['type' => 2]));
+        $this->post(UserData::registerUrl(), array_merge(UserData::newUserData(), ['type' => 2]));
         $this->assertCount(1, User::all());
         $user = User::first();
 
@@ -29,4 +29,30 @@ class UserTest extends TestCase
         $this->assertCount(1, Job::all());
         $response->assertStatus(201);
     }
+
+    public function test_a_company_can_edit_a_job() {
+        $this->post(UserData::registerUrl(), array_merge(UserData::newUserData(), ['type' => 2]));
+        $this->assertCount(1, User::all());
+        $user = User::first();
+
+        $response = $this->withHeaders(UserData::headers($user))
+            ->post('api/jobs', UserData::newJobData($user->id));
+
+        $job = Job::first();
+
+        $this->assertCount(1, Job::all());
+        $response->assertStatus(201);
+
+        $response = $this->withHeaders(UserData::headers($user))
+            ->patch(UserData::patch($job->id),
+            array_merge(UserData::newJobData($user->id), ['title' => 'my new title']));
+
+        $this->assertEquals('my new title', Job::first()->title);
+
+        $response->assertStatus(200);
+    }
+
+//    public function test_a_company_cant_edit_a_job_from_another_company() {
+//
+//    }
 }
