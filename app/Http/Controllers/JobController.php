@@ -52,15 +52,20 @@ class JobController extends Controller
 
     public function show(Job $job)
     {
-        //
-    }
+        if($job->user_id != auth()->user()->id) {
+            return response()->json(['error' => 'Operation unauthorized'], 401);
+        }
 
+        return response()->json([
+            'status' => 'success',
+            'job-details' => $job
+        ]);
+    }
 
     public function edit(Job $job)
     {
         //
     }
-
 
     public function update(JobRequest $request, Job $job)
     {

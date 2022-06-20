@@ -74,7 +74,5 @@ class UserTest extends TestCase
                 array_merge(UserData::newJobData($user2->id), ['title' => 'my new title']));
 
         $response->assertStatus(401);
-
-        print_r($user2);
     }
 }

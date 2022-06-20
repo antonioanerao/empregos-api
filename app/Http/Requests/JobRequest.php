@@ -26,8 +26,16 @@ class JobRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'required', 'title' => 'required', 'description' => 'required', 'expirationDate' => 'required',
-            'companyName'
+            'user_id' => 'required', 'title' => 'required', 'description' => 'required',
+            'expirationDate' => 'required|date_format:d/m/Y', 'email' => 'required_without:phone|email',
+            'phone' => 'required_without:email'
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'expirationDate.date_format' => 'The expiration date does not match the format dd/mm/yyyy.',
         ];
     }
 

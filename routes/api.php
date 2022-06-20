@@ -27,8 +27,3 @@ Route::group(['prefix'=>'auth'], function() {
 });
 
 Route::resource('jobs',JobController::class);
-
-
-Route::get('/test', function () {
-    return "test";
-});

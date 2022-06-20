@@ -12,6 +12,6 @@ class Job extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id', 'title', 'description', 'companyName', 'expirationDate'
+        'user_id', 'title', 'description', 'companyName', 'expirationDate', 'email', 'phone'
     ];
 }
