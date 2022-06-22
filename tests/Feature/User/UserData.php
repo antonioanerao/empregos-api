@@ -39,6 +39,9 @@ class UserData
 
     public static function urlPostJob() {
         return "/api/jobs";
+
+    }    public static function urlDeleteJob($id) {
+        return "/api/jobs/" . $id ;
     }
 
     public static function newJobData() {

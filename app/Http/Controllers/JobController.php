@@ -78,4 +78,23 @@ class JobController extends Controller
             'job-details' => $job
         ]);
     }
+
+    // Make a method to delete a job
+    public function destroy(Job $job)
+    {
+        if (($job->user_id != auth()->user()->id)) {
+            return response()->json(['error' => 'Operation unauthorized'], 401);
+        }
+
+        try{
+            $job->delete();
+        }catch(\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Your job was successfully deleted'
+        ]);
+    }
 }
