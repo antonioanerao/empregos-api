@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JobController;
 use App\Models\Job;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,3 +28,16 @@ Route::group(['prefix'=>'auth'], function() {
 });
 
 Route::resource('jobs',JobController::class);
+
+Route::get('jwt', function() {
+    $token = JWTAuth::fromUser(User::find(1));
+
+    //return jwt auth resolved token
+
+
+
+
+
+
+
+});

@@ -28,13 +28,6 @@ class JobController extends Controller
     {
         $data = $request->all();
 
-        if($data['user_id'] != auth()->user()->id) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'You can not post a job in another account name'
-            ]);
-        }
-
         try{
             $job = Job::create($data);
         }catch(\Exception $exception) {
@@ -69,7 +62,7 @@ class JobController extends Controller
 
     public function update(JobRequest $request, Job $job)
     {
-        if(($job->user_id != auth()->user()->id) or ($request->user_id != auth()->user()->id) ) {
+        if(($job->user_id != auth()->user()->id)) {
             return response()->json(['error' => 'Operation unauthorized'], 401);
         }
 
@@ -81,13 +74,8 @@ class JobController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Your job was successfully created',
+            'message' => 'Your job was successfully updated',
             'job-details' => $job
         ]);
-    }
-
-    public function destroy(Job $job)
-    {
-        //
     }
 }

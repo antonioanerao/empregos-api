@@ -37,19 +37,18 @@ class UserData
         return "/api/jobs/" . $id;
     }
 
-    public static function postJob() {
+    public static function urlPostJob() {
         return "/api/jobs";
     }
 
-    public static function newJobData($user) {
+    public static function newJobData() {
         return [
-            'user_id' => $user,
             'title' => 'new job post',
             'companyName' => 'Company',
             'description' => nl2br('My job description'),
             'email' => 'mail@domain.com',
             'phone' => 'my phone',
-            'expirationDate' => Carbon::now()->addDays(7),
+            'expirationDate' => Carbon::now()->addDays(7)->format('d/m/Y'),
             'status' => 1
         ];
     }
