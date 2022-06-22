@@ -25,6 +25,5 @@ class Job extends Model
         static::creating(function ($job) {
             $job->user_id = auth()->user()->id;
         });
-
     }
 }

@@ -4,24 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\JobRequest;
 use App\Models\Job;
-use Illuminate\Http\Request;
 
 class JobController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => []]);
+        $this->middleware('auth:api', ['except' => ['show', 'index']]);
     }
 
     public function index()
     {
-        //
-    }
+        if(auth()->check()) {
+            return response()->json([
+                'warning' => '',
+                'jobs' => Job::where('status', 1)->paginate(10, ['id', 'title', 'description', 'companyName', 'expirationDate', 'email', 'phone', 'status'])
+            ]);
+        }
 
-
-    public function create()
-    {
-        //
+        return response()->json([
+            'warning' => 'You must log in to view email and phone numbers.',
+            'jobs' => Job::where('status', 1)->paginate(10, ['id', 'title', 'description', 'companyName', 'expirationDate', 'status'])
+        ]);
     }
 
     public function store(JobRequest $request)
@@ -45,19 +48,14 @@ class JobController extends Controller
 
     public function show(Job $job)
     {
-        if($job->user_id != auth()->user()->id) {
-            return response()->json(['error' => 'Operation unauthorized'], 401);
+        if($job->status === 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Job not found or is no longer active'
+            ], 404);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'job-details' => $job
-        ]);
-    }
-
-    public function edit(Job $job)
-    {
-        //
+        return $job->only(['id', 'title', 'description', 'companyName', 'expirationDate', 'email', 'phone', 'status']);
     }
 
     public function update(JobRequest $request, Job $job)
@@ -79,7 +77,6 @@ class JobController extends Controller
         ]);
     }
 
-    // Make a method to delete a job
     public function destroy(Job $job)
     {
         if (($job->user_id != auth()->user()->id)) {
