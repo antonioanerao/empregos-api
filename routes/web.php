@@ -14,15 +14,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Welcome to ' . config('app.name') . ' API'
+    ]);
 });
 
-
-Route::get('/test', function () {
-    return "test";
-});
-
-
-Route::get('/jobs/1', function() {
-    return "jobs";
+Route::get('/test', function() {
+   // Return all data from table password_resets
+    $password_resets = DB::table('password_resets')->get();
+    return response()->json($password_resets);
 });

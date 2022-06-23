@@ -2,8 +2,6 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JobController;
-use App\Models\Job;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,7 +25,6 @@ Route::group(['prefix'=>'auth'], function() {
     Route::post('register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('auth.reset-password');
     Route::post('reset-password-with-token', [AuthController::class, 'resetPasswordWithToken'])->name('auth.reset-password-with-token');
-
 });
 
 Route::resource('jobs',JobController::class);

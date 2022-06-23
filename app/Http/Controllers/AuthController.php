@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ResetPasswordWithTokenRequest;
 use App\Http\Requests\UserCandidateRequest;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRequest;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -69,17 +71,14 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // Make a method to allow a user reset their password and sent them an email with a link to reset their password
     public function resetPassword(Request $request){
-        // Validate the request
         $request->validate([
             'email' => 'required|email',
+            'url-back' => 'required|url'
         ]);
 
-        // Find the user by their email
         $user = User::where('email', $request->email)->first();
 
-        // If the user does not exist, return an error
         if(!$user){
             return response()->json([
                 'status' => 'error',
@@ -87,54 +86,79 @@ class AuthController extends Controller
             ], 404);
         }
 
-        // Generate a random string for the password reset token
         $token = STR::random(60);
+        $url_back = $request['url-back'];
 
-        // Create a password reset token for the user
-        $user->remember_token = $token;
+        DB::beginTransaction();
+        try{
+            $passwordReset = DB::table('password_resets')->select('email')->where('email', $request->email)->first();
 
-        // Save the user
-        $user->save();
+            if($passwordReset) {
+                DB::table('password_resets')->where('email', $request->email)->update([
+                    'token' => $token,
+                    'url-back' => $request['url-back'],
+                    'created_at' => now()
+                ]);
+            } else {
+                DB::table('password_resets')->insert([
+                    'email' => $user->email,
+                    'token' => $token,
+                    'url-back' => $request['url-back'],
+                    'created_at' => now()
+                ]);
+            }
+            Mail::send('emails.reset-password', ['token' => $token, 'url_back' => $url_back, 'user' => $user], function ($m) use ($token, $url_back, $user) {
+                $m->from(env('MAIL_FROM_ADDRESS'), env('APP_NAME'));
+                $m->to($user->email, $user->name)->subject('Reset your password');
+            });
+            DB::commit();
+        }catch(\Exception $exception) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => $exception->getMessage()
+            ], 401);
+        }
 
-        // Send the password by email
-        event(new PasswordReset($user));
-
-        // Return a success message
         return response()->json([
             'status' => 'success',
             'message' => 'Password reset email sent'
         ]);
     }
 
-    public function resetPasswordWithToken(Request $request)
+    public function resetPasswordWithToken(ResetPasswordWithTokenRequest $request)
     {
-        // Validate the request
-        $request->validate([
-            'token' => 'required',
-            'password' => 'required'
-        ]);
+        $resetPassword = DB::table('password_resets')
+            ->select('email', 'token')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->first();
 
-        // Find the user by their password reset token
-        $user = User::where('remember_token', $request->token)->first();
-
-        // If the token does not exist, return an error
-        if (!$user) {
+        if(!$resetPassword) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'This password reset token is invalid.'
             ], 404);
         }
 
-        // Set the user's password
-        $user->password = bcrypt($request->password);
 
-        // Expire the remember_token
-        $user->remember_token = null;
+        DB::beginTransaction();
+        try{
+            $user = User::where('email', $request->email)->first();
 
-        // Save the user
-        $user->save();
+            $user->password = bcrypt($request->password);
+            $user->save();
 
-        // Return a success message
+            DB::table('password_resets')->where('email', $request->email)->delete();
+            DB::commit();
+        }catch (\Exception $exception) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => $exception->getMessage()
+            ], 401);
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'Password reset successfully'
