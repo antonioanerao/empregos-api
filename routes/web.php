@@ -19,9 +19,3 @@ Route::get('/', function () {
         'message' => 'Welcome to ' . config('app.name') . ' API'
     ]);
 });
-
-Route::get('/test', function() {
-   // Return all data from table password_resets
-    $password_resets = DB::table('password_resets')->get();
-    return response()->json($password_resets);
-});
