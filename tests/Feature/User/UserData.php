@@ -41,8 +41,18 @@ class UserData
     public static function urlPostJob() {
         return "/api/jobs";
 
-    }    public static function urlDeleteJob($id) {
+    }
+
+    public static function urlDeleteJob($id) {
         return "/api/jobs/" . $id ;
+    }
+
+    public static function urlResetPassword() {
+        return "api/auth/reset-password";
+    }
+
+    public static function urlResetPasswordWithtoken() {
+        return "api/auth/reset-password-with-token";
     }
 
     public static function newJobData() {
