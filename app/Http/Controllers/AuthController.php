@@ -107,10 +107,14 @@ class AuthController extends Controller
                     'created_at' => now()
                 ]);
             }
-//            Mail::send('emails.reset-password', ['token' => $token, 'url_back' => $url_back, 'user' => $user], function ($m) use ($token, $url_back, $user) {
-//                $m->from(env('MAIL_FROM_ADDRESS'), env('APP_NAME'));
-//                $m->to($user->email, $user->name)->subject('Reset your password');
-//            });
+
+            if(env('APP_ENV') != 'local') {
+                Mail::send('emails.reset-password', ['token' => $token, 'url_back' => $url_back, 'user' => $user], function ($m) use ($token, $url_back, $user) {
+                    $m->from(env('MAIL_FROM_ADDRESS'), env('APP_NAME'));
+                    $m->to($user->email, $user->name)->subject('Reset your password');
+                });
+            }
+
             DB::commit();
         }catch(\Exception $exception) {
             DB::rollBack();
