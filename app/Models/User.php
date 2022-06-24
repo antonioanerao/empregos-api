@@ -66,4 +66,8 @@ class User extends Authenticatable implements JWTSubject
     public function userType() {
         return UserCandidate::where('user_id', '=', $this->id)->first();
     }
+
+    public function passwordReset() {
+        return $this->hasOne(PasswordReset::class, 'email', 'email');
+    }
 }

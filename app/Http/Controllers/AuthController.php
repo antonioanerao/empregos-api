@@ -7,19 +7,25 @@ use App\Http\Requests\UserCandidateRequest;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\UserCandidate;
-use Illuminate\Auth\Events\PasswordReset;
+use App\Models\PasswordReset;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
+/**
+ * @property PasswordReset $passwordreset
+ */
 class AuthController extends Controller
 {
-    public function __construct()
+    public function __construct(PasswordReset $passwordReset)
     {
-        $this->middleware('auth:api', ['except' => ['login','register', 'resetPassword', 'resetPasswordWithToken']]);
+        $this->middleware('auth:api',
+            ['except' => [
+                'login','register', 'resetPassword', 'resetPasswordWithToken'
+            ]]);
+        $this->passwordReset = $passwordReset;
     }
 
     public function login(UserLoginRequest $request)
@@ -91,16 +97,17 @@ class AuthController extends Controller
 
         DB::beginTransaction();
         try{
-            $passwordReset = DB::table('password_resets')->select('email')->where('email', $request->email)->first();
+            $passwordReset = $this->passwordReset->where('email', $request->email)->first();
 
             if($passwordReset) {
-                DB::table('password_resets')->where('email', $request->email)->update([
+                $this->passwordReset->where('email', $request->email)->update([
                     'token' => $token,
                     'url-back' => $request['url-back'],
                     'created_at' => now()
                 ]);
+
             } else {
-                DB::table('password_resets')->insert([
+                $this->passwordReset->create([
                     'email' => $user->email,
                     'token' => $token,
                     'url-back' => $request['url-back'],
@@ -114,7 +121,6 @@ class AuthController extends Controller
                     $m->to($user->email, $user->name)->subject('Reset your password');
                 });
             }
-
             DB::commit();
         }catch(\Exception $exception) {
             DB::rollBack();
@@ -132,11 +138,8 @@ class AuthController extends Controller
 
     public function resetPasswordWithToken(ResetPasswordWithTokenRequest $request)
     {
-        $resetPassword = DB::table('password_resets')
-            ->select('email', 'token')
-            ->where('email', $request->email)
-            ->where('token', $request->token)
-            ->first();
+        $resetPassword = $this->passwordReset->where('email', $request->email)
+            ->where('token', $request->token)->first();
 
         if(!$resetPassword) {
             return response()->json([
@@ -145,7 +148,6 @@ class AuthController extends Controller
             ], 404);
         }
 
-
         DB::beginTransaction();
         try{
             $user = User::where('email', $request->email)->first();
@@ -153,7 +155,7 @@ class AuthController extends Controller
             $user->password = bcrypt($request->password);
             $user->save();
 
-            DB::table('password_resets')->where('email', $request->email)->delete();
+            $this->passwordReset->where('email', $request->email)->delete();
             DB::commit();
         }catch (\Exception $exception) {
             DB::rollBack();
