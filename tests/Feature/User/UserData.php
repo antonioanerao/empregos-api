@@ -14,6 +14,7 @@ class UserData
             'name' => 'Antonio',
             'email' => 'antonio@empregos.com.br',
             'password' => '10203040',
+            'password_confirmation' => '10203040',
             'type' => 1,
             'user_id' => 1
         ];
