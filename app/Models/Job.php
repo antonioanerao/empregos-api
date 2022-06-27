@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 class Job extends Model
 {
     use HasFactory;
+    protected $table = 'companys_job';
     protected $fillable = [
         'title', 'description', 'companyName', 'expirationDate', 'email', 'phone', 'status'
     ];

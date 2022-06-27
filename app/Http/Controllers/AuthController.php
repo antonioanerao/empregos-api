@@ -6,6 +6,7 @@ use App\Http\Requests\ResetPasswordWithTokenRequest;
 use App\Http\Requests\UserCandidateRequest;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRequest;
+use App\Jobs\UserRegistrationJob;
 use App\Models\UserCandidate;
 use App\Models\PasswordReset;
 use Illuminate\Http\Request;
@@ -61,6 +62,11 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'type' => $userCandidateRequest->type
             ]);
+
+            if(env('APP_ENV') == 'production') {
+                UserRegistrationJob::dispatch($user);
+            }
+
             DB::commit();
         }catch(\Exception $exception) {
             DB::rollBack();
