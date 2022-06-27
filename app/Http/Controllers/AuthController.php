@@ -7,6 +7,7 @@ use App\Http\Requests\UserCandidateRequest;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Jobs\UserRegistrationJob;
+use App\Jobs\UserResetPasswordJob;
 use App\Models\UserCandidate;
 use App\Models\PasswordReset;
 use Illuminate\Http\Request;
@@ -121,12 +122,10 @@ class AuthController extends Controller
                 ]);
             }
 
-            if(env('APP_ENV') != 'local') {
-                Mail::send('emails.reset-password', ['token' => $token, 'url_back' => $url_back, 'user' => $user], function ($m) use ($token, $url_back, $user) {
-                    $m->from(env('MAIL_FROM_ADDRESS'), env('APP_NAME'));
-                    $m->to($user->email, $user->name)->subject('Reset your password');
-                });
-            }
+//            if(env('APP_ENV') != 'local') {
+//                UserResetPasswordJob::dispatch($user, $token, $url_back);
+//            }
+            UserResetPasswordJob::dispatch($user);
             DB::commit();
         }catch(\Exception $exception) {
             DB::rollBack();
