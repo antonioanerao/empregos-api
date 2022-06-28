@@ -4,8 +4,6 @@ namespace Tests\Feature\User;
 
 use Carbon\Carbon;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
-use Illuminate\Database\Eloquent\Factories\Factory;
-
 
 class UserData
 {
@@ -35,16 +33,16 @@ class UserData
     }
 
     public static function patch($id) {
-        return "/api/jobs/" . $id;
+        return "/api/company/jobs/" . $id;
     }
 
     public static function urlPostJob() {
-        return "/api/jobs";
+        return "/api/company/jobs";
 
     }
 
     public static function urlDeleteJob($id) {
-        return "/api/jobs/" . $id ;
+        return "/api/company/jobs/" . $id ;
     }
 
     public static function urlResetPassword() {

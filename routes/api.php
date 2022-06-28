@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CompanyJobController;
 use App\Http\Controllers\JobController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,4 +28,9 @@ Route::group(['prefix'=>'auth'], function() {
     Route::post('reset-password-with-token', [AuthController::class, 'resetPasswordWithToken'])->name('auth.reset-password-with-token');
 });
 
-Route::resource('jobs',JobController::class);
+Route::group(['prefix' => 'company'], function() {
+    Route::resource('jobs',CompanyJobController::class)->except('create', 'edit', 'index');
+});
+
+Route::post('jobs', [JobController::class, 'index'])->name('jobs.index');
+Route::post('jobs/{job}', [JobController::class, 'show'])->name('jobs.show');

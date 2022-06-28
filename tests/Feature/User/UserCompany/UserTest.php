@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\User\UserCompany;
 
-use App\Models\Job;
+use App\Models\CompanysJob;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -29,7 +29,7 @@ class UserTest extends TestCase
 
         $response = $this->withHeaders(UserData::headers($user))->post(UserData::urlPostJob(), UserData::newJobData());
 
-        $this->assertCount(1, Job::all());
+        $this->assertCount(1, CompanysJob::all());
         $response->assertStatus(201);
     }
 
@@ -41,16 +41,16 @@ class UserTest extends TestCase
         $response = $this->withHeaders(UserData::headers($user))
             ->post(UserData::urlPostJob(), UserData::newJobData());
 
-        $job = Job::first();
+        $job = CompanysJob::first();
 
-        $this->assertCount(1, Job::all());
+        $this->assertCount(1, CompanysJob::all());
         $response->assertStatus(201);
 
         $response = $this->withHeaders(UserData::headers($user))
             ->patch(UserData::patch($job->id),
             array_merge(UserData::newJobData(), ['title' => 'my new title']));
 
-        $this->assertEquals('my new title', Job::first()->title);
+        $this->assertEquals('my new title', CompanysJob::first()->title);
 
         $response->assertStatus(200);
     }
@@ -70,9 +70,9 @@ class UserTest extends TestCase
             ->post(UserData::urlPostJob(), UserData::newJobData());
 
         $response->assertStatus(201);
-        $this->assertCount(1, Job::all());
+        $this->assertCount(1, CompanysJob::all());
 
-        $response = $this->actingAs($user2)->patch(UserData::patch(Job::first()->id), array_merge(UserData::newJobData(), ['title' => 'my new title']));
+        $response = $this->actingAs($user2)->patch(UserData::patch(CompanysJob::first()->id), array_merge(UserData::newJobData(), ['title' => 'my new title']));
 
         $response->assertStatus(401);
     }
@@ -85,15 +85,15 @@ class UserTest extends TestCase
         $response = $this->withHeaders(UserData::headers($user))
             ->post(UserData::urlPostJob(), UserData::newJobData());
 
-        $job = Job::first();
+        $job = CompanysJob::first();
 
-        $this->assertCount(1, Job::all());
+        $this->assertCount(1, CompanysJob::all());
         $response->assertStatus(201);
 
         $response = $this->withHeaders(UserData::headers($user))
             ->delete(UserData::urlDeleteJob($job->id));
 
-        $this->assertCount(0, Job::all());
+        $this->assertCount(0, CompanysJob::all());
         $response->assertStatus(200);
     }
 
@@ -113,9 +113,9 @@ class UserTest extends TestCase
 
         $response->assertStatus(201);
 
-        $this->assertCount(1, Job::all());
+        $this->assertCount(1, CompanysJob::all());
 
-        $response = $this->actingAs($user2)->delete(UserData::urlDeleteJob(Job::first()->id));
+        $response = $this->actingAs($user2)->delete(UserData::urlDeleteJob(CompanysJob::first()->id));
 
         $response->assertStatus(401);
     }

@@ -3,15 +3,13 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * @method static first()
  */
-class Job extends Model
+class CompanysJob extends Model
 {
-    use HasFactory;
     protected $table = 'companys_job';
     protected $fillable = [
         'title', 'description', 'companyName', 'expirationDate', 'email', 'phone', 'status'
