@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\JobRequest;
 use App\Models\CompanysJob;
+use App\Services\CompanysJobService;
+use Illuminate\Http\JsonResponse;
 
 class CompanyJobController extends Controller
 {
@@ -34,12 +36,13 @@ class CompanyJobController extends Controller
         ]);
     }
 
-    public function store(JobRequest $request)
+    public function store(JobRequest $request, CompanysJobService $service): JsonResponse
     {
-        $data = $request->all();
-
         try{
-            $job = CompanysJob::create($data);
+            $job = $service->storeNewCompanysJob(
+                $request->title, $request->description, $request->companyName, $request->email, $request->phone,
+                $request->expirationDate
+            );
         }catch(\Exception $exception) {
             return response()->json(['error' => $exception->getMessage()]);
         }
@@ -49,7 +52,6 @@ class CompanyJobController extends Controller
             'message' => 'Your job was successfully created',
             'job-details' => $job
         ], 201);
-
     }
 
     public function show(CompanysJob $job)

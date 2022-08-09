@@ -6,33 +6,34 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
+/**
+ * @property string $title
+ * @property string $description
+ * @property string $expirationDate
+ * @property string $email
+ * @property string $phone
+ * @property string $companyName
+ */
 class JobRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'title' => 'required', 'description' => 'required',
-            'expirationDate' => 'required|date_format:d/m/Y', 'email' => 'required_without:phone|email',
-            'phone' => 'required_without:email'
+            'title' => 'required',
+            'description' => 'required',
+            'expirationDate' => 'required|date_format:d/m/Y',
+            'email' => 'required_without:phone|email',
+            'phone' => 'required_without:email',
+            'companysName' => 'nullable|string'
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'expirationDate.date_format' => 'The expiration date does not match the format dd/mm/yyyy.',
