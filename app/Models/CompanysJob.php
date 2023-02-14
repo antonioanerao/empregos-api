@@ -16,7 +16,7 @@ class CompanysJob extends Model
     ];
 
     public function setExpirationDateAttribute($expirationDate) {
-        $this->attributes['expirationDate'] = Carbon::createFromFormat('d/m/Y', $expirationDate)->format('d-m-Y');
+        $this->attributes['expirationDate'] = Carbon::createFromFormat('d/m/Y', $expirationDate)->format('Y-m-d');
     }
 
     protected static function booted()
