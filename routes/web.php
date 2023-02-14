@@ -16,6 +16,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return response()->json([
         'status' => 'success',
-        'message' => 'Welcome to ' . config('app.name') . ' API'
+        'message' => 'Welcome to ' . config('app.name') . ' API ' . 'v' . config('app.')
     ]);
 });
