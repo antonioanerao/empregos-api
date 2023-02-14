@@ -6,7 +6,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Name
+    | Application Name and version
     |--------------------------------------------------------------------------
     |
     | This value is the name of your application. This value is used when the
@@ -16,6 +16,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+    'version' => env('APP_VERSION'),
 
     /*
     |--------------------------------------------------------------------------
